@@ -20,7 +20,7 @@ class CreateAssignmentTable extends Migration
             $table->string('assignable_type');
             $table->string('assignable_id');
             $table->date('start');
-            $table->date('end');
+            $table->date('end')->nullable();
             $table->timestamps();
         });
     }

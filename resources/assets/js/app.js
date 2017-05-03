@@ -6,17 +6,21 @@
  */
 
 require('./bootstrap');
+require('jquery')
 
-window.Vue = require('vue');
+$(document).ready(function() {
+    $('select[name="assignable_type"]').change(function(e) {
+        var selected = $('select[name="assignable_type"] option:selected').val();
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+        $('#node_select').hide();
+        $('select[name="assignable_id_node"]').attr('disabled', 'disabled');
 
-Vue.component('example', require('./components/Example.vue'));
+        $('#member_select').hide();
+        $('select[name="assignable_id_member"]').attr('disabled', 'disabled');
 
-const app = new Vue({
-    el: '#app'
+        $('#' +selected+ '_select').show();
+        $('select[name="assignable_id_' +selected+ '"]').attr('disabled', false);
+    });
+
+    $('select[name="assignable_type"]').trigger('change');
 });

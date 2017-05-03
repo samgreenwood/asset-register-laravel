@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->increments('id');
             $table->string('manufacturer');
             $table->string('name');
-            $table->decimal('price');
+            $table->decimal('rrp');
             $table->timestamps();
         });
     }

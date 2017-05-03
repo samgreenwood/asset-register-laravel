@@ -48,7 +48,7 @@ class LoginController extends Controller
     }
 
     /**
-     *
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function handleAirStreamCallback()
     {

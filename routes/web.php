@@ -11,8 +11,22 @@
 |
 */
 
+Route::bind('node', function($id) {
+    return app(\App\Repositories\NodeRepository::class)->findById($id);
+});
+
+Route::bind('member', function($id) {
+    return app(\App\Repositories\MemberRepository::class)->findById($id);
+});
+
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/nodes', 'NodeController@index')->name('nodes.index');
+    Route::get('/nodes/{node}', 'NodeController@show')->name('nodes.show');
+    Route::get('/members', 'NodeController@index')->name('members.index');
+    Route::get('/members/{member}', 'NodeController@show')->name('members.show');
+    Route::resource('products', 'ProductController');
+    Route::resource('assets', 'AssetController');
 });
 
 
