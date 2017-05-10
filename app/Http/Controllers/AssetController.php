@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entities\Asset;
+use App\Entities\Assignment;
 use App\Entities\Product;
 use App\Repositories\MemberRepository;
 use App\Repositories\NodeRepository;
@@ -49,9 +50,11 @@ class AssetController extends Controller
     public function create()
     {
         $products = Product::pluck('name', 'id');
+
         $nodes = $this->nodeRepository->all()->mapWithKeys(function($node) {
             return [$node->uuid => $node->name];
         });
+
         $members = $this->memberRepository->all()->mapWithKeys(function($member) {
             return [$member->uuid => $member->name];
         });
@@ -67,7 +70,29 @@ class AssetController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'product_id' => 'required',
+            'purchase_reference' => 'required',
+            'purchase_date' => 'required|date',
+            'assignment_type' => 'required',
+            'assignment_id' => 'required'
+        ]);
+
+        $asset = Asset::create([
+            'product_id' => $request->input('product_id'),
+            'purchase_date' => $request->input('purchase_date'),
+            'purchase_reference' => $request->input('purchase_reference'),
+        ]);
+
+        $assignment = new Assignment([
+            'assignable_type' => $request->input('assignment_type'),
+            'assignable_id' => $request->input('assignable_id'),
+            'assignment_date' => $request->input('assignment_date')
+        ]);
+
+        $asset->assignments()->save($assignment);
+
+
     }
 
     /**
