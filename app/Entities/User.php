@@ -1,29 +1,80 @@
 <?php
 
-namespace App;
+namespace App\Entities;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable;
 
-class User extends Authenticatable
+class User implements Authenticatable
 {
-    use Notifiable;
+    use \LaravelDoctrine\ORM\Auth\Authenticatable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
+     * @var int
      */
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
+    private $id;
 
     /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
+     * @var string
      */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    private $firstname;
+
+    /**
+     * @var string
+     */
+    private $surname;
+
+    /**
+     * @var string
+     */
+    private $nickname;
+
+    /**
+     * @var Member
+     */
+    private $member;
+
+    /**
+     * User constructor.
+     * @param $firstname
+     * @param $surname
+     * @param $nickname
+     * @param Member $member
+     */
+    public function __construct($firstname, $surname, $nickname, Member $member)
+    {
+        $this->firstname = $firstname;
+        $this->surname = $surname;
+        $this->nickname = $nickname;
+        $this->member = $member;
+    }
+
+    /**
+     * @param Member $member
+     * @return static
+     */
+    public static function fromMember(Member $member): User
+    {
+        return new static(
+            $member->firstname(),
+            $member->surname(),
+            $member->nickname(),
+            $member
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function name(): string
+    {
+        return sprintf('%s %s', $this->firstname, $this->surname);
+    }
+
+    /**
+     * @return Member
+     */
+    public function member(): Member
+    {
+        return $this->member;
+    }
 }

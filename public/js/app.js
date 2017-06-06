@@ -11016,13 +11016,13 @@ $(document).ready(function () {
         var selected = $('select[name="assignable_type"] option:selected').val();
 
         $('#node_select').hide();
-        $('select[name="assignable_id_node"]').attr('disabled', 'disabled');
+        $('#node_select select').attr('disabled', 'disabled');
 
         $('#member_select').hide();
-        $('select[name="assignable_id_member"]').attr('disabled', 'disabled');
+        $('#member_select select').attr('disabled', 'disabled');
 
         $('#' + selected + '_select').show();
-        $('select[name="assignable_id_' + selected + '"]').attr('disabled', false);
+        $('#' + selected + '_select select').attr('disabled', false);
     });
 
     $('select[name="assignable_type"]').trigger('change');

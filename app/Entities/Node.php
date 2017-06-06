@@ -2,33 +2,42 @@
 
 namespace App\Entities;
 
-class Node {
+use Illuminate\Support\Collection;
+
+class Node implements Assignable {
+
+    /**
+     * @var string
+     */
+    private $uuid;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var array
+     */
+    private $assets;
 
     /**
      * Node constructor.
-     * @param $uuid
-     * @param $name
+     * @param string $uuid
+     * @param string $name
+     * @param Collection $assets
      */
-    public function __construct($uuid, $name)
+    public function __construct(string $uuid, string $name, Collection $assets = null)
     {
         $this->uuid = $uuid;
         $this->name = $name;
+        $this->assets = $assets ?? collect([]);
     }
-
-    /**
-     * @var string
-     */
-    protected $uuid;
-
-    /**
-     * @var string
-     */
-    protected $name;
 
     /**
      * @return string
      */
-    public function uuid()
+    public function uuid(): string
     {
         return $this->uuid;
     }
@@ -36,20 +45,32 @@ class Node {
     /**
      * @return string
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
 
     /**
-     * @param $param
-     * @return mixed
+     * @param $assets
      */
-    public function __get($param)
+    public function setAssets(Collection $assets)
     {
-        if(method_exists($this, $param)) return $this->{$param}();
-
-        return $this->{$param};
+        $this->assets = $assets;
     }
 
+    /**
+     * @return Collection
+     */
+    public function assets(): Collection
+    {
+        return $this->assets;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name();
+    }
 }

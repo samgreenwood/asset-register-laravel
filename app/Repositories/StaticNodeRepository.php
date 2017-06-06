@@ -2,7 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Entities\Asset;
 use App\Entities\Node;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 
 class StaticNodeRepository implements NodeRepository {
 
@@ -16,6 +18,7 @@ class StaticNodeRepository implements NodeRepository {
         if (($handle = fopen(storage_path('app/nodes.csv'), "r")) !== FALSE) {
 
             while (($data = fgetcsv($handle, null, ",")) !== FALSE) {
+
                 $this->nodeData[$data[0]] = new Node($data[0], $data[1]);
             }
 

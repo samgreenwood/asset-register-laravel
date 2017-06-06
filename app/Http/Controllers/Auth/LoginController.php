@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Entities\User;
 use App\Http\Controllers\Controller;
-use App\User;
+use App\Entities\EloquentUser;
+use App\Repositories\MemberRepository;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 
 class LoginController extends Controller
 {
@@ -28,15 +31,20 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/home';
+    /**
+     * @var MemberRepository
+     */
+    private $memberRepository;
 
     /**
      * Create a new controller instance.
      *
-     * @return void
+     * @param MemberRepository $memberRepository
      */
-    public function __construct()
+    public function __construct(MemberRepository $memberRepository)
     {
         $this->middleware('guest')->except('logout');
+        $this->memberRepository = $memberRepository;
     }
 
     /**
@@ -54,10 +62,18 @@ class LoginController extends Controller
     {
         $user = Socialite::driver('airstream')->user();
 
-        $localUser = User::firstOrCreate(['email' => $user->email], [
-            'name' => $user->name,
-            'password' => $user->email,
-        ]);
+        if(!(in_array('Committee', $user->groups) || in_array('Net Admins', $user->groups)))
+        {
+            abort(403, "Sorry, you don't have access to the Air-Stream EloquentAsset Register");
+        }
+
+        session()->put('oauth_token', $user->token);
+
+        $member = $this->memberRepository->findById($user->id);
+        $localUser = User::fromMember($member);
+        
+        EntityManager::persist($localUser);
+        EntityManager::flush();
         
         auth()->login($localUser);
 

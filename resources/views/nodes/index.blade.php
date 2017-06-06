@@ -21,7 +21,7 @@
                                 <tr>
                                     <td>{{$node->uuid()}}</td>
                                     <td><a href="{{route('nodes.show', $node->uuid())}}">{{$node->name()}}</a></td>
-                                    <td>0</td>
+                                    <td>{{$node->assets()->count()}}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

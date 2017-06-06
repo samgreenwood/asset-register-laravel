@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\Asset;
 use App\Entities\Node;
 use App\Repositories\NodeRepository;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 
 class NodeController extends Controller
 {
@@ -26,7 +28,16 @@ class NodeController extends Controller
      */
     public function index()
     {
-        $nodes = $this->nodeRepository->all();
+
+        $assets = collect(EntityManager::getRepository(Asset::class)->findAll());
+        
+        $nodes = collect($this->nodeRepository->all())->map(function(Node $node) use($assets) {
+            $node->setAssets($assets->filter(function(Asset $asset) use($node) {
+                return $asset->currentLocation() == $node;
+            }));
+
+            return $node;
+        });
 
         return view('nodes.index', compact('nodes'));
     }
@@ -37,7 +48,9 @@ class NodeController extends Controller
      */
     public function show(Node $node)
     {
-        $assets = [];
+        $assets = collect(EntityManager::getRepository(Asset::class)->findAll())->filter(function(Asset $asset) use($node) {
+            return $asset->currentLocation() == $node;
+        });
 
         return view('nodes.show', compact('node', 'assets'));
     }

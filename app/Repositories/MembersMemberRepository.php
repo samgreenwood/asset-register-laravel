@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Entities\Member;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Auth\Guard;
+use Laravel\Socialite\Facades\Socialite;
 
 class MembersMemberRepository implements MemberRepository {
 
@@ -34,9 +35,21 @@ class MembersMemberRepository implements MemberRepository {
      */
     public function all()
     {
-        return collect([
-            new Member('212', 'Sam', 'Greenwood', 'dragoon')
-        ]);
+        return cache()->remember('api.members', 60, function()
+        {
+            $response = $this->client->get('https://members.air-stream.org/api/members', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer '.session('oauth_token')
+                ],
+            ]);
+
+            $members = $response->getBody()->getContents();
+
+            return collect(json_decode($members))->map(function($member) {
+                return new Member($member->id, $member->firstname, $member->surname, $member->nickname);
+            });
+        });
     }
 
     /**
@@ -45,7 +58,9 @@ class MembersMemberRepository implements MemberRepository {
      */
     public function findById($id)
     {
-        return null;
+        return $this->all()->filter(function(Member $member) use($id){
+            return $member->uuid() == $id;
+        })->first();
     }
 
 }

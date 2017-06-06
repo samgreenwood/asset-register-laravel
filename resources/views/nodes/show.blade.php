@@ -5,26 +5,15 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Assets for {{$node->name}}</div>
+                    <div class="panel-heading">
+                        Assets for {{$node->name()}}
+                        <div class="pull-right">
+                            <a class="btn btn-primary btn-xs" href="{{route('assets.create', ['node' => $node->uuid()])}}">Add Asset</a>
+                        </div>
+                    </div>
 
                     <div class="panel-body">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Product</th>
-                                <th>Assigned On</th>
-                                <th>Assigned By</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($assets as $asset)
-                                <tr>
-
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                        @include('assets.table')
                     </div>
                 </div>
             </div>

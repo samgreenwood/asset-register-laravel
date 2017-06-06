@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Entities\Asset;
-use App\Entities\Assignment;
-use App\Entities\Product;
 use App\Repositories\MemberRepository;
 use App\Repositories\NodeRepository;
+use App\Repositories\ProductRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 
 class AssetController extends Controller
 {
@@ -20,14 +21,23 @@ class AssetController extends Controller
      * @var NodeRepository
      */
     private $nodeRepository;
+    
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
 
     /**
      * AssetController constructor.
+     * @param MemberRepository $memberRepository
+     * @param NodeRepository $nodeRepository
+     * @param ProductRepository $productRepository
      */
-    public function __construct(MemberRepository $memberRepository, NodeRepository $nodeRepository)
+    public function __construct(MemberRepository $memberRepository, NodeRepository $nodeRepository, ProductRepository $productRepository)
     {
         $this->memberRepository = $memberRepository;
         $this->nodeRepository = $nodeRepository;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -37,7 +47,7 @@ class AssetController extends Controller
      */
     public function index()
     {
-        $assets = Asset::all();
+        $assets = EntityManager::getRepository(Asset::class)->findAll();
         
         return view('assets.index', compact('assets'));
     }
@@ -49,14 +59,16 @@ class AssetController extends Controller
      */
     public function create()
     {
-        $products = Product::pluck('name', 'id');
+        $products = $this->productRepository->all()->mapWithKeys(function($product) {
+            return [$product->uuid() => $product->fullName()];
+        });
 
         $nodes = $this->nodeRepository->all()->mapWithKeys(function($node) {
-            return [$node->uuid => $node->name];
+            return [$node->uuid() => $node->name()];
         });
 
         $members = $this->memberRepository->all()->mapWithKeys(function($member) {
-            return [$member->uuid => $member->name];
+            return [$member->uuid() => $member->name()];
         });
 
         return view('assets.create', compact('products', 'nodes', 'members'));
@@ -73,26 +85,27 @@ class AssetController extends Controller
         $this->validate($request, [
             'product_id' => 'required',
             'purchase_reference' => 'required',
-            'purchase_date' => 'required|date',
-            'assignment_type' => 'required',
-            'assignment_id' => 'required'
+            'purchased_date' => 'required|date',
+            'assignable_type' => 'required',
+            'assignable_id' => 'required'
         ]);
+        
+        $product = $this->productRepository->findById($request->input('product_id'));
+        $assignable = $this->nodeRepository->findById($request->input('assignable_id')) ??
+                      $this->memberRepository->findById($request->input('assignable_id'));
 
-        $asset = Asset::create([
-            'product_id' => $request->input('product_id'),
-            'purchase_date' => $request->input('purchase_date'),
-            'purchase_reference' => $request->input('purchase_reference'),
-        ]);
+        $asset = new Asset(
+            $product,
+            $request->input('purchase_reference'),
+            new \DateTimeImmutable($request->input('purchased_date'))
+        );
 
-        $assignment = new Assignment([
-            'assignable_type' => $request->input('assignment_type'),
-            'assignable_id' => $request->input('assignable_id'),
-            'assignment_date' => $request->input('assignment_date')
-        ]);
+        $asset->assign($assignable, auth()->user()->member(), $request->input('notes'));
 
-        $asset->assignments()->save($assignment);
+        EntityManager::persist($asset);
+        EntityManager::flush();
 
-
+        return redirect()->route('assets.show', $asset->id());
     }
 
     /**
@@ -103,40 +116,6 @@ class AssetController extends Controller
      */
     public function show(Asset $asset)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  Asset  $asset
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Asset $asset)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  Asset  $asset
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Asset $asset)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  Asset  $asset
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Asset $asset)
-    {
-        //
+        return view('assets.show', compact('asset'));
     }
 }

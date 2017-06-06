@@ -6,18 +6,16 @@
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Create Asset
+                        Reassign Asset {{$asset->id()}}
                     </div>
 
                     <div class="panel-body">
-                        {!! Former::open(route('assets.store')) !!}
-                        {!! Former::select('product_id', 'Product')->options($products)->value(request('product')) !!}
-                        {!! Former::text('purchase_reference', 'Purchase Reference') !!}
-                        {!! Former::date('purchased_date', 'Purchased Date')->value(date('Y-m-d')) !!}
+                        {!! Former::open(route('assets.doreassign', $asset->id())) !!}
+
                         {!! Former::select('assignable_type', 'Assignment Type')->options(['node' => 'Node', 'member' => 'Member']) !!}
 
                         <div id="node_select">
-                            {!! Former::select('assignable_id', 'Assigned To')->options($nodes)->value(request('node')) !!}
+                            {!! Former::select('assignable_id', 'Assigned To')->options($nodes) !!}
                         </div>
 
                         <div id="member_select">
@@ -25,12 +23,11 @@
                         </div>
 
                         {!! Former::textarea('notes') !!}
-                        {!! Former::submit('save')->addClass('btn-primary pull-right') !!}
+                        {!! Former::submit('reassign')->addClass('btn-primary pull-right') !!}
                         {!! Former::close() !!}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 @endsection

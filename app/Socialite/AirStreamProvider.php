@@ -63,7 +63,7 @@ class AirStreamProvider extends AbstractProvider implements ProviderInterface
     }
 
     /**
-     * Map the raw user array to a Socialite User instance.
+     * Map the raw user array to a Socialite EloquentUser instance.
      *
      * @param  array $user
      * @return \Laravel\Socialite\Two\User
@@ -71,10 +71,14 @@ class AirStreamProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User)->setRaw($user)->map([
-            'id' => $user['uuid'],
+            'id' => $user['id'],
+            'uuid' => $user['uuid'],
             'nickname' => $user['username'],
             'name' => $user['firstname'] . ' ' . $user['surname'],
-            'email' => $user['username'] . '@air-stream.org'
+            'email' => $user['username'] . '@air-stream.org',
+            'groups' => array_map(function($group) {
+                return $group['name'];
+            }, $user['groups'])
         ]);
     }
 

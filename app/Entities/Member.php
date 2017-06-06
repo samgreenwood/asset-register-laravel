@@ -2,7 +2,7 @@
 
 namespace App\Entities;
 
-class Member {
+class Member implements Assignable {
 
     /**
      * @var string
@@ -17,12 +17,12 @@ class Member {
     /**
      * @var string
      */
-    protected $surname;
+    private $surname;
 
     /**
      * @var string
      */
-    protected $nickname;
+    private $nickname;
 
     /**
      * Member constructor.
@@ -31,7 +31,7 @@ class Member {
      * @param $surname
      * @param $nickname
      */
-    public function __construct($uuid, $firstname, $surname, $nickname)
+    public function __construct(string $uuid, string $firstname, string $surname, string $nickname)
     {
         $this->uuid = $uuid;
         $this->firstname = $firstname;
@@ -42,7 +42,7 @@ class Member {
     /**
      * @return string
      */
-    public function uuid()
+    public function uuid(): string
     {
         return $this->uuid;
     }
@@ -50,19 +50,41 @@ class Member {
     /**
      * @return string
      */
-    public function name()
+    public function firstname(): string
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * @return string
+     */
+    public function surname(): string
+    {
+        return $this->surname;
+    }
+
+    /**
+     * @return string
+     */
+    public function nickname(): string
+    {
+        return $this->nickname;
+    }
+
+    /**
+     * @return string
+     */
+    public function name(): string
     {
         return sprintf("%s %s (%s)", $this->firstname, $this->surname, $this->nickname);
     }
 
     /**
-     * @param $param
-     * @return mixed
+     * @return string
      */
-    public function __get($param)
+    public function __toString()
     {
-        if(method_exists($this, $param)) return $this->{$param}();
-
-        return $this->{$param};
+        return $this->name();
     }
+
 }
