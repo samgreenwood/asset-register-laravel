@@ -94,7 +94,7 @@ class Asset
      */
     public function currentLocation(): Assignable
     {
-        return $this->currentAssignment()->location();
+        return $this->assignments()->last() ? $this->assignments->last()->location() : new NullLocation();
     }
 
     /**
