@@ -69,11 +69,15 @@ class LoginController extends Controller
 
         session()->put('oauth_token', $user->token);
 
-        $member = $this->memberRepository->findById($user->id);
-        $localUser = User::fromMember($member);
-        
-        EntityManager::persist($localUser);
-        EntityManager::flush();
+        $localUser = EntityManager::getRepository(User::class)->findOneBy(['member_id' => $user->id]);
+
+        if(!$localUser) {
+            $member = $this->memberRepository->findById($user->id);
+            $localUser = User::fromMember($member);
+
+            EntityManager::persist($localUser);
+            EntityManager::flush();
+        }
         
         auth()->login($localUser);
 
