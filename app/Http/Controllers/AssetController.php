@@ -87,12 +87,22 @@ class AssetController extends Controller
             'purchase_reference' => 'required',
             'purchased_date' => 'required|date',
             'assignable_type' => 'required',
-            'assignable_id' => 'required'
+            'assignable_id' => 'required',
+            'notes' => 'required'
         ]);
         
         $product = $this->productRepository->findById($request->input('product_id'));
-        $assignable = $this->nodeRepository->findById($request->input('assignable_id')) ??
-                      $this->memberRepository->findById($request->input('assignable_id'));
+        $assignable = null;
+
+        switch(request('assignable_type'))
+        {
+            case 'member':
+                $assignable = $this->memberRepository->findById($request->input('assignable_id'));
+                break;
+            case 'node':
+                $assignable = $this->nodeRepository->findById($request->input('assignable_id'));
+                break;
+        }
 
         $asset = new Asset(
             $product,

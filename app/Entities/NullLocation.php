@@ -19,16 +19,19 @@ class NullLocation implements Assignable
     {
         return 'N/A';
     }
-    
+
+    /**
+     * @return string
+     */
     public function assignedBy(): string
     {
         return 'N/A';
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name();
     }

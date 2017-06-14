@@ -19,7 +19,7 @@ class StaticNodeRepository implements NodeRepository {
 
             while (($data = fgetcsv($handle, null, ",")) !== FALSE) {
 
-                $this->nodeData[$data[0]] = new Node($data[0], $data[1]);
+                $this->nodeData[$data[1]] = new Node($data[1], $data[2]);
             }
 
             fclose($handle);

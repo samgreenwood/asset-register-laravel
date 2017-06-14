@@ -61,6 +61,7 @@ class MembersMemberRepository implements MemberRepository {
         return $this->all()->filter(function(Member $member) use($id){
             return $member->uuid() == $id;
         })->first();
+
     }
 
 }

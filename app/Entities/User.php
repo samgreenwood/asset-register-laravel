@@ -50,7 +50,7 @@ class User implements Authenticatable
 
     /**
      * @param Member $member
-     * @return static
+     * @return User
      */
     public static function fromMember(Member $member): User
     {
