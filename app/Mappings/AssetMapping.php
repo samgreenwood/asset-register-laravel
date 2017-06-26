@@ -25,6 +25,7 @@ class AssetMapping extends EntityMapping
         $builder->increments('id');
         $builder->string('purchaseReference');
         $builder->dateTime('purchasedAt');
+        $builder->string('serial');
         $builder->field('product', 'product')->name('product_id');
         $builder->hasMany(Assignment::class)->mappedBy('asset')->cascadePersist()->fetchEager()->orderBy('assignedAt', 'DESC');
     }

@@ -6,7 +6,6 @@ use App\Entities\Asset;
 use App\Repositories\MemberRepository;
 use App\Repositories\NodeRepository;
 use App\Repositories\ProductRepository;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 
@@ -88,7 +87,7 @@ class AssetController extends Controller
             'purchased_date' => 'required|date',
             'assignable_type' => 'required',
             'assignable_id' => 'required',
-            'notes' => 'required'
+            'serial' => 'required'
         ]);
         
         $product = $this->productRepository->findById($request->input('product_id'));
@@ -107,10 +106,11 @@ class AssetController extends Controller
         $asset = new Asset(
             $product,
             $request->input('purchase_reference'),
-            new \DateTimeImmutable($request->input('purchased_date'))
+            new \DateTimeImmutable($request->input('purchased_date')),
+            $request->input('serial')
         );
 
-        $asset->assign($assignable, auth()->user()->member(), $request->input('notes'));
+        $asset->assign($assignable, auth()->user()->member(), $request->input('notes') ?? 'None');
 
         EntityManager::persist($asset);
         EntityManager::flush();

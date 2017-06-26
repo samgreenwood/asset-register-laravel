@@ -4,57 +4,54 @@ namespace App\Entities;
 
 use Carbon\Carbon;
 use DateTimeInterface;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping AS ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="assets")
- */
 class Asset
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
      * @var integer
      */
     private $id;
 
     /**
      * @var Product
-     * @ORM\Column(type="string", name="product_id")
      */
     private $product;
 
     /**
-     * @ORM\Column(type="string")
      * @var string
      */
     private $purchaseReference;
 
     /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
+     * @var DateTimeInterface
      */
     private $purchasedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="Assignment", mappedBy="asset")
-     * @var Assignment[]
+     * @var string
+     */
+    private $serial;
+
+    /**
+     * @var ArrayCollection
      */
     private $assignments;
 
     /**
      * Asset constructor.
+     * @param Product $product
+     * @param string $purchaseReference
+     * @param DateTimeInterface $purchasedAt
+     * @param string $serial
      */
-    public function __construct(Product $product, string $purchaseReference, DateTimeInterface $purchasedAt)
+    public function __construct(Product $product, string $purchaseReference, DateTimeInterface $purchasedAt, string $serial)
     {
         $this->product = $product;
         $this->purchaseReference = $purchaseReference;
         $this->purchasedAt = $purchasedAt;
         $this->assignments = new ArrayCollection();
+        $this->serial = $serial;
     }
 
     /**
@@ -74,7 +71,7 @@ class Asset
     }
 
     /**
-     * @return DateTime
+     * @return DateTimeInterface
      */
     public function purchasedAt(): DateTimeInterface
     {
@@ -114,13 +111,21 @@ class Asset
     }
 
     /**
-     * @param Assignable $assignable
-     * @param User $assignedBy
-     * @param string $
+     * @param Assignable $location
+     * @param Member $assignedBy
+     * @param string $notes
      */
     public function assign(Assignable $location, Member $assignedBy, string $notes)
     {
         $this->assignments[] = new Assignment(Carbon::now(), $assignedBy, $this, $location, $notes);
+    }
+
+    /**
+     * @return string
+     */
+    public function serial(): string
+    {
+        return $this->serial;
     }
 
 }

@@ -13,7 +13,20 @@
                     </div>
 
                     <div class="panel-body">
-                        <h3>Purchase Information</h3>
+                        <h4>Asset Information</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Product</th>
+                                <td>{{$asset->product()->name()}}</td>
+                            </tr>
+                            <tr>
+                                <th>Serial</th>
+                                <td>{{$asset->serial()}}</td>
+                            </tr>
+                            </thead>
+                        </table>
+                        <h4>Purchase Information</h4>
                         <table class="table table-bordered">
                             <thead>
                             <tr>
@@ -26,7 +39,7 @@
                             </tr>
                             </thead>
                         </table>
-                        <h3>Assignments</h3>
+                        <h4>Assignments</h4>
                         <table class="table table-bordered">
                             <thead>
                             <tr>
