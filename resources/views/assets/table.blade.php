@@ -3,6 +3,7 @@
     <tr>
         <th>ID</th>
         <th>Product</th>
+        <th>Serial</th>
         <th>Current Assignment</th>
         <th>Assigned By</th>
         <th>Assigned On</th>
@@ -14,6 +15,7 @@
         <tr>
             <td><a href="{{route('assets.show', $asset->id())}}">{{$asset->id()}}</a></td>
             <td>{{$asset->product()->name()}}</td>
+            <td>{{$asset->serial()}}</td>
             <td>{{$asset->currentLocation()}}</td>
             <td>{{$asset->currentAssignment()->assignedBy()}}</td>
             <td>{{$asset->currentAssignment()->assignedAt()}}</td>
